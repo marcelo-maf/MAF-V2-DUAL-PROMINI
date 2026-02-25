@@ -25,9 +25,10 @@ bool modoVoltagem = false;
 int telaAtual = 0;           
 const int pinBuzzer = A3;
 
-void enviarParaDAC(int valor) {
-  Wire.beginTransmission(0x09); 
-  Wire.write(valor); 
+void enviarParaDAC(int valor10bits) {
+  Wire.beginTransmission(0x09);
+  Wire.write(highByte(valor10bits)); // Parte alta do número (os bits de cima)
+  Wire.write(lowByte(valor10bits));  // Parte baixa do número (os bits de baixo)
   Wire.endTransmission();
 }
 
@@ -65,9 +66,8 @@ void atualizarSistema() {
     display.print(F("Pressione X p/ Sair"));
   } 
   else { // --- TELA 0: TRABALHO ---
-    int valorDAC = modoVoltagem ? (valorSetado / 10.0) * 255.0 : (valorSetado - 4.0) / 16.0 * 255.0;
-    if (valorDAC < 0) valorDAC = 0; if (valorDAC > 255) valorDAC = 255;
-    enviarParaDAC(valorDAC);
+    // Procure esta linha dentro da função atualizarSistema()
+    int valorDAC = modoVoltagem ? (valorSetado / 10.0) * 1023.0 : (valorSetado - 4.0) / 16.0 * 1023.0;
 
     display.drawRect(0, 0, 128, 14, SSD1306_WHITE);
     display.setTextSize(1);
